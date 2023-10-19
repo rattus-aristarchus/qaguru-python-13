@@ -6,15 +6,36 @@ from selenium.webdriver.chrome.options import Options
 from utils import attach
 
 
-@pytest.fixture()
-def setup_browser():
+def pytest_addoption(parser):
+    parser.addoption(
+        "--browser",
+        help="Браузер для запуска тестов",
+        choices=["firefox", "chrome"],
+        default="chrome"
+    )
+    parser.addoption(
+        "--browser-version",
+        help="Версия браузера",
+        default="100.0"
+    )
+    parser.addoption(
+        "--remote-browser",
+        help="Адрес удаленного браузера",
+        default="https://user1:1234@selenoid.autotests.cloud/wd/hub"
+    )
+
+
+@pytest.fixture(scope="session")
+def setup_browser(request):
     browser.config.window_width = 1600
     browser.config.window_height = 1200
+    browser_name = request.config.getoption("--browser")
+    browser_version = request.config.getoption("--browser-version")
+    remote_browser = request.config.getoption("--remote-browser")
 
-    browser_version = "100.0"
     options = Options()
     selenoid_capabilities = {
-        "browserName": "chrome",
+        "browserName": browser_name,
         "browserVersion": browser_version,
         "selenoid:options": {
             "enableVNC": True,
@@ -23,7 +44,7 @@ def setup_browser():
     }
     options.capabilities.update(selenoid_capabilities)
     driver = webdriver.Remote(
-        command_executor=f"https://user1:1234@selenoid.autotests.cloud/wd/hub",
+        command_executor=remote_browser,
         options=options
     )
 
