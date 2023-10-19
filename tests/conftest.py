@@ -14,12 +14,12 @@ def pytest_addoption(parser):
         default="chrome"
     )
     parser.addoption(
-        "--browser-version",
+        "--browser_version",
         help="Версия браузера",
         default="100.0"
     )
     parser.addoption(
-        "--remote-browser",
+        "--remote_browser",
         help="Адрес удаленного браузера",
         default="https://user1:1234@selenoid.autotests.cloud/wd/hub"
     )
@@ -30,8 +30,8 @@ def setup_browser(request):
     browser.config.window_width = 1600
     browser.config.window_height = 1200
     browser_name = request.config.getoption("--browser")
-    browser_version = request.config.getoption("--browser-version")
-    remote_browser = request.config.getoption("--remote-browser")
+    browser_version = request.config.getoption("--browser_version")
+    remote_browser = request.config.getoption("--remote_browser")
 
     options = Options()
     selenoid_capabilities = {
