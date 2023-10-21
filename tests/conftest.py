@@ -1,9 +1,17 @@
+import os
+
 import pytest
 from selene import browser, Browser, Config
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from dotenv import load_dotenv
 
 from utils import attach
+
+
+@pytest.fixture(scope="session", autouse=True)
+def load_env():
+    load_dotenv()
 
 
 def pytest_addoption(parser):
@@ -18,11 +26,6 @@ def pytest_addoption(parser):
         help="Версия браузера",
         default="100.0"
     )
-    parser.addoption(
-        "--remote_browser",
-        help="Адрес удаленного браузера",
-        default="https://user1:1234@selenoid.autotests.cloud/wd/hub"
-    )
 
 
 @pytest.fixture(scope="session")
@@ -31,7 +34,9 @@ def setup_browser(request):
     browser.config.window_height = 1200
     browser_name = request.config.getoption("--browser")
     browser_version = request.config.getoption("--browser_version")
-    remote_browser = request.config.getoption("--remote_browser")
+
+    login = os.getenv('LOGIN')
+    pwd = os.getenv('PASSWORD')
 
     options = Options()
     selenoid_capabilities = {
@@ -44,7 +49,7 @@ def setup_browser(request):
     }
     options.capabilities.update(selenoid_capabilities)
     driver = webdriver.Remote(
-        command_executor=remote_browser,
+        command_executor=f"https://{login}:{pwd}@selenoid.autotests.cloud/wd/hub",
         options=options
     )
 
