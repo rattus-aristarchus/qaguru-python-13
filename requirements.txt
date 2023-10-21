@@ -2,4 +2,4 @@ pytest
 selene>=2.0.0rc4
 strenum
 allure-pytest==2.9.45
-python-dotenv=0.20.0
+python-dotenv==0.20.0
